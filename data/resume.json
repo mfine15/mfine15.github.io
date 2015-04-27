@@ -1,0 +1,96 @@
+{
+  "basics": {
+    "name": "Michael Fine",
+    "label": "Web Developer",
+    "picture": "",
+    "email": "mfine15@gmail.com",
+    "phone": "301-221-8781",
+    "website": "michaelfine.me",
+    "summary": "Michael is a high school senior and self-taught programmer. When he's not at school, he's hacking on open source projects, wrestling, playing around with robots, or attending hackathons. ",
+    "location": {
+      "address": "108 Grafton St",
+      "postalCode": "20815",
+      "city": "Chevy CHase",
+      "countryCode": "US",
+      "region": "Maryland"
+    },
+    "profiles": [
+      {
+        "network": "Github",
+        "username": "mfine15",
+        "url": "github.com/mfine15"
+      }
+    ]
+  },
+  "work": [
+    {
+      "company": "NGP VAN",
+      "position": "Developer Intern",
+      "website": "ngpvan.com",
+      "startDate": "2014-06-29",
+      "endDate": "2014-08-21",
+      "summary": "NGP VAN is the leading technology provider to Democratic and progressive campaigns and organizations, offering clients an integrated platform of the best fundraising, compliance, field, organizing, new media, and social networking products.",
+      "highlights": [
+        "Helped create web application to aggregate user data from disparate company websites and scrape social media to create targeted user profiles",
+        "Created internal tool to gamify clean coding"
+      ]
+    },
+    {
+      "company": "Eventkloud",
+      "position": "Developer Intern",
+      "website": "eventkloud.com",
+      "startDate": "2013-07-01",
+      "endDate": "2013-08-07",
+      "summary": "EventKloud is a audience-driven marketing & advertising automation platform for events. Its a smarter way to create cross-channel, streamlined event campaigns to reach, engage & measure your audience all from a central dashboard.",
+      "highlights": [
+        "Created dedicated mobile site, reducing page load times twofold",
+        "Created geographic dashboard to streamline sales process"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Bethesda-Chevy Chase High School",
+      "area": "",
+      "startDate": "2011-08-26",
+      "endDate": "2015-05-27",
+      "gpa": "3.96",
+      "courses": []
+    }
+  ],
+  "awards": [],
+  "publications": [],
+  "skills": [
+    {
+      "name": "Web Development",
+      "level": "",
+      "keywords": [
+        "Node.js",
+        "Angular.js",
+        "Postgres",
+        "Neo4j",
+        "Rails"
+      ]
+    },
+    {
+      "name": "General Programming",
+      "level": "",
+      "keywords": [
+        "Haskell",
+        "Javascript",
+        "Ruby"
+      ]
+    }
+  ],
+  "languages": [],
+  "interests": [
+    {
+      "name": "Robotics",
+      "keywords": [
+        "Designed, programmed and built state qualifying robot for First Tech Challenge",
+        "Implemented Kalman filters to navigate autonomously"
+      ]
+    }
+  ],
+  "references": []
+}
