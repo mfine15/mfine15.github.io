@@ -55,7 +55,7 @@ header li a{
 
 #about a{
   text-decoration: none;
-  color:#7ca1bb;
+  color:inherit;
   font-weight:500;
 }
 
