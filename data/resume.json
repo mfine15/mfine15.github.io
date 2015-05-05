@@ -6,7 +6,7 @@
     "email": "mfine15@gmail.com",
     "phone": "301-221-8781",
     "website": "michaelfine.me",
-    "summary": "Michael is a high school senior and self-taught programmer. When he's not at school, he's hacking on open source projects, wrestling, playing around with robots, or attending hackathons. ",
+    "summary": "I am a high school senior and self-taught programmer, specializing in Javascript web applications and Haskell. When I'm not at school, I'm hacking on open source projects, wrestling, playing around with robots, or attending hackathons. ",
     "location": {
       "address": "108 Grafton St",
       "postalCode": "20815",
@@ -49,6 +49,14 @@
     }
   ],
   "education": [
+    {
+      "institution": "Harvard University",
+      "area": "",
+      "startDate": "2011-08-26",
+      "endDate": "2015-05-27",
+      "gpa": "",
+      "courses": []
+    },
     {
       "institution": "Bethesda-Chevy Chase High School",
       "area": "",
