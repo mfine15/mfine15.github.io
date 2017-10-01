@@ -2,6 +2,40 @@ html,body{
   padding:0 0 0 0;
   height:100%;
 }
+@media (max-width: 900px){
+  #main header{
+    width: 90%;
+    margin:0 auto 60px auto;
+  }
+  #main footer {
+    width: 90%;
+  }
+  #main header h1{
+    display: block;
+    width:100%;
+    text-align: center;
+  }
+  #main .bounding{
+    margin-top: 8px;
+    text-align: center;
+    height:50px;
+    display: block;
+  }
+  #main header ul{
+    display: inline-block;
+    float: none;
+    font-weight: 600;
+    font-size:20px;
+  }
+  #main header li{
+    list-style-type: none;
+    margin: 0 25px 0 25px;
+  }
+  #main #about{
+    width: 90%;
+    margin: 0 auto;
+  }
+}
 *{
   margin: 0;
 }
@@ -18,13 +52,18 @@ header{
   padding-top:20px;
   width:650px;
   height:60px;
-  margin:0 auto 40px auto;
+  margin:0 auto 20px auto;
   display:block;
 }
 
+.bounding{
+  height:50px;
+  display: inline;
+}
+
 header h1{
-  display:inline;
   width:300px;
+  display: inline-block;
 }
 header h1 span{
   font-weight:300;
@@ -37,6 +76,7 @@ header ul{
 header li{
   float:left;
   list-style-type: none;
+  font-size:20px;
   margin-left:30px;
 }
 header li a{
@@ -53,7 +93,7 @@ header li a{
   line-height:35px;
 }
 
-#about a{
+a{
   text-decoration: none;
   color:inherit;
   font-weight:500;

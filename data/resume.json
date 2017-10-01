@@ -6,11 +6,10 @@
     "email": "mfine15@gmail.com",
     "phone": "301-221-8781",
     "website": "michaelfine.me",
-    "summary": "I am a high school senior and self-taught programmer, specializing in Javascript web applications and Haskell. When I'm not at school, I'm hacking on open source projects, wrestling, playing around with robots, or attending hackathons. ",
     "location": {
       "address": "108 Grafton St",
       "postalCode": "20815",
-      "city": "Chevy CHase",
+      "city": "Chevy Chase",
       "countryCode": "US",
       "region": "Maryland"
     },
@@ -24,14 +23,29 @@
   },
   "work": [
     {
+      "company": "Hillary for America",
+      "position": "Software Engineer & Team Lead",
+      "website": "hillaryclinton.com",
+      "startDate": "June 2015",
+      "endDate": "November 2015",
+      "summary": "Hillary for America runs the Clinton presidential campaign, the largest digital campaign in history.",
+      "highlights": [
+        "Created internal fundraising tool that tracked and raised over $150,000 in donations",
+        "Developed tool to easily hot-swap images in emails after delivery; application was used to give live updates to over 3 million recipients",
+        "Automated vetting of corporations and people, saving multiple man-hours per vetting",
+        "Created web scrapers to automate daily reporting, saving over 2 man-hours per day",
+        "Worked on migration of dataflow infrastructure to a more robust, open source platform"
+      ]
+    },
+    {
       "company": "NGP VAN",
       "position": "Developer Intern",
       "website": "ngpvan.com",
-      "startDate": "2014-06-29",
-      "endDate": "2014-08-21",
+      "startDate": "June 2014",
+      "endDate": "August 2014",
       "summary": "NGP VAN is the leading technology provider to Democratic and progressive campaigns and organizations, offering clients an integrated platform of the best fundraising, compliance, field, organizing, new media, and social networking products.",
       "highlights": [
-        "Helped create web application to aggregate user data from disparate company websites and scrape social media to create targeted user profiles",
+        "Helped create web application to aggregate user data from disparate internal websites and scrape social media to create targeted user profiles",
         "Created internal tool to gamify clean coding"
       ]
     },
@@ -39,9 +53,9 @@
       "company": "Eventkloud",
       "position": "Developer Intern",
       "website": "eventkloud.com",
-      "startDate": "2013-07-01",
-      "endDate": "2013-08-07",
-      "summary": "EventKloud is a audience-driven marketing & advertising automation platform for events. Its a smarter way to create cross-channel, streamlined event campaigns to reach, engage & measure your audience all from a central dashboard.",
+      "startDate": "July 2013",
+      "endDate": "August 2013",
+      "summary": "EventKloud is a audience-driven marketing & advertising automation platform for events. ",
       "highlights": [
         "Created dedicated mobile site, reducing page load times twofold",
         "Created geographic dashboard to streamline sales process"
@@ -52,17 +66,16 @@
     {
       "institution": "Harvard University",
       "area": "",
-      "startDate": "2011-08-26",
-      "endDate": "2015-05-27",
+      "startDate": "August 2016",
+      "endDate": "-",
       "gpa": "",
       "courses": []
     },
     {
       "institution": "Bethesda-Chevy Chase High School",
       "area": "",
-      "startDate": "2011-08-26",
-      "endDate": "2015-05-27",
-      "gpa": "3.96",
+      "startDate": "August 2011",
+      "endDate": "June 2015",
       "courses": []
     }
   ],
@@ -70,33 +83,56 @@
   "publications": [],
   "skills": [
     {
-      "name": "Web Development",
+      "name": "Languages",
       "level": "",
       "keywords": [
-        "Node.js",
-        "Angular.js",
-        "Postgres",
-        "Neo4j",
-        "Rails"
+        "Javascript",
+        "Python ",
+        "Haskell",
+        "OCaml",
+        "Ruby"
       ]
     },
     {
-      "name": "General Programming",
+      "name": "Libraries/Frameworks",
       "level": "",
       "keywords": [
-        "Haskell",
-        "Javascript",
-        "Ruby"
+        "React",
+        "Redux/Flux",
+        "Hapi.js",
+        "Rails",
+        "d3.js"
+      ]
+    },
+    {
+      "name": "Databases",
+      "level": "",
+      "keywords": [
+        "Postgres",
+        "Vertica ",
+        "Neo4j"
       ]
     }
   ],
-  "languages": [],
   "interests": [
+    {
+      "name": "Cooking",
+      "keywords": [
+        "Completed Ballymaloe 12 Week Certificate course"
+      ]
+    },
     {
       "name": "Robotics",
       "keywords": [
         "Designed, programmed and built state qualifying robot for First Tech Challenge",
         "Implemented Kalman filters to navigate autonomously"
+      ]
+    },
+    {
+      "name": "Hiking",
+      "keywords": [
+        "Eagle Scout",
+        "Hiked 1300 miles on the California section of the Pacific Crest Trail"
       ]
     }
   ],
