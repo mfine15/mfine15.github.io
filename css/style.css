@@ -89,8 +89,8 @@ header li a{
   font-weight:300;
   width:670px;
   margin:0 auto;
-  font-size:20px;
-  line-height:35px;
+  font-size:18px;
+  line-height:32px;
 }
 
 a{
@@ -110,7 +110,7 @@ footer{
   height:40px;
   width:650px;
   font-size:50px;
-  margin:50px auto 0 auto;
+  margin:0 auto 0 auto;
   text-align:center;
 }
 footer a:visited,a{
