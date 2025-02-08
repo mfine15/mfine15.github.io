@@ -329,11 +329,13 @@
                                         <div key={index} 
                                              className="bg-gradient-to-r from-purple-700/80 to-pink-700/80 p-6 rounded-xl transform transition-all hover:scale-105">
                                             <div className="flex items-center gap-4">
-                                                <img 
-                                                    src={photos[index].imageUrl} 
-                                                    alt={photos[index].title}
-                                                    className="w-24 h-24 object-cover rounded-lg"
-                                                />
+                                                <div className="w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden bg-black">
+                                                    <img 
+                                                        src={photos[index].imageUrl} 
+                                                        alt={photos[index].title}
+                                                        className="w-full h-full object-cover object-center"
+                                                    />
+                                                </div>
                                                 <div className="flex-1">
                                                     <div className="font-bold mb-2">✨ Round {round.round}</div>
                                                     <div>🎯 Year Guessed: {round.yearGuess}</div>
@@ -367,11 +369,11 @@
                                 <div className="text-xl font-bold">🏆 {score}/{totalRounds * 100}</div>
                             </div>
 
-                            <div className="relative mb-4 rounded-xl overflow-hidden shadow-2xl">
+                            <div className="relative mb-4 rounded-xl overflow-hidden shadow-2xl bg-black">
                                 <img 
                                     src={currentPhoto.imageUrl}
                                     alt={currentPhoto.title}
-                                    className="w-full h-64 object-cover"
+                                    className="w-full h-[40vh] object-cover object-center mx-auto"
                                 />
                             </div>
 
