@@ -328,15 +328,15 @@
                                     {roundScores.map((round, index) => (
                                         <div key={index} 
                                              className="bg-gradient-to-r from-purple-700/80 to-pink-700/80 p-6 rounded-xl transform transition-all hover:scale-105">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden bg-black">
+                                            <div className="flex flex-col sm:flex-row items-center gap-4">
+                                                <div className="w-48 h-48 sm:w-32 sm:h-32 flex-shrink-0 rounded-lg overflow-hidden bg-black mb-4 sm:mb-0">
                                                     <img 
                                                         src={photos[index].imageUrl} 
                                                         alt={photos[index].title}
                                                         className="w-full h-full object-cover object-center"
                                                     />
                                                 </div>
-                                                <div className="flex-1">
+                                                <div className="flex-1 text-center sm:text-left">
                                                     <div className="font-bold mb-2">✨ Round {round.round}</div>
                                                     <div>🎯 Year Guessed: {round.yearGuess}</div>
                                                     <div>📅 Actual Year: {round.actualYear}</div>
