@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AshWhen Taken</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuD_z0rqEL28m7EZacqpWO3Ek_nMeHT04"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const PhotoGuessGame = () => {
+            const [currentRound, setCurrentRound] = React.useState(1);
+            const [selectedYear, setSelectedYear] = React.useState(1950);
+            const [selectedLocation, setSelectedLocation] = React.useState(null);
+            const [score, setScore] = React.useState(0);
+            const [hasGuessed, setHasGuessed] = React.useState(false);
+            const [isGameOver, setIsGameOver] = React.useState(false);
+            const [roundScores, setRoundScores] = React.useState([]);
+            
+            const currentPhoto = {
+                imageUrl: "https://i.postimg.cc/gjpJGbYf/temp-Imagec-A2-Rw-F.avif",
+                actualYear: 1967,
+                location: { lat: 37.772277, lng: -122.425897 },
+                title: "San Francisco Scene",
+                description: "Historical photo from San Francisco"
+            };
+
+            const mapContainerStyle = {
+                width: '100%',
+                height: '400px',
+                borderRadius: '8px'
+            };
+
+            const center = {
+                lat: 20,
+                lng: 0
+            };
+
+            const calculateDistance = (lat1, lng1, lat2, lng2) => {
+                const R = 6371;
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLng = (lng2 - lng1) * Math.PI / 180;
+                const a = 
+                    Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                    Math.sin(dLng/2) * Math.sin(dLng/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                return Math.round(R * c);
+            };
+
+            const calculateScores = () => {
+                const yearDiff = Math.abs(selectedYear - currentPhoto.actualYear);
+                const yearScore = Math.round(Math.max(0, 50 - yearDiff));
+
+                let locationScore = 0;
+                let distance = null;
+                
+                if (selectedLocation) {
+                    distance = calculateDistance(
+                        selectedLocation.lat,
+                        selectedLocation.lng,
+                        currentPhoto.location.lat,
+                        currentPhoto.location.lng
+                    );
+                    locationScore = Math.round(Math.max(0, 50 - (distance / 100)));
+                }
+
+                return {
+                    yearScore,
+                    locationScore,
+                    totalScore: Math.round(yearScore + locationScore),
+                    distance
+                };
+            };
+
+            const handleMapClick = (event) => {
+                if (!hasGuessed) {
+                    setSelectedLocation({
+                        lat: event.latLng.lat(),
+                        lng: event.latLng.lng()
+                    });
+                }
+            };
+
+            const handleGuess = () => {
+                if (!selectedLocation) return;
+                const scores = calculateScores();
+                setScore(prevScore => Math.round(prevScore + scores.totalScore));
+                setHasGuessed(true);
+                setRoundScores(prev => [...prev, {
+                    round: currentRound,
+                    yearGuess: selectedYear,
+                    actualYear: currentPhoto.actualYear,
+                    distance: scores.distance,
+                    score: scores.totalScore
+                }]);
+            };
+
+            const nextRound = () => {
+                if (currentRound >= 5) {
+                    setIsGameOver(true);
+                } else {
+                    setCurrentRound(prev => prev + 1);
+                    setHasGuessed(false);
+                    setSelectedYear(1950);
+                    setSelectedLocation(null);
+                }
+            };
+
+            const restartGame = () => {
+                setCurrentRound(1);
+                setScore(0);
+                setHasGuessed(false);
+                setSelectedYear(1950);
+                setSelectedLocation(null);
+                setIsGameOver(false);
+                setRoundScores([]);
+            };
+
+            React.useEffect(() => {
+                if (window.google && window.google.maps) {
+                    const map = new window.google.maps.Map(document.getElementById('map'), {
+                        center,
+                        zoom: 2,
+                        styles: [
+                            {
+                                featureType: 'all',
+                                elementType: 'all',
+                                stylers: [{ lightness: -20 }]
+                            }
+                        ],
+                        streetViewControl: false,
+                        mapTypeControl: false,
+                        fullscreenControl: false
+                    });
+
+                    map.addListener('click', handleMapClick);
+
+                    if (selectedLocation) {
+                        new window.google.maps.Marker({
+                            position: selectedLocation,
+                            map,
+                            icon: {
+                                path: window.google.maps.SymbolPath.CIRCLE,
+                                scale: 7,
+                                fillColor: "#FF0000",
+                                fillOpacity: 1,
+                                strokeWeight: 0
+                            }
+                        });
+                    }
+
+                    if (hasGuessed) {
+                        new window.google.maps.Marker({
+                            position: currentPhoto.location,
+                            map,
+                            icon: {
+                                path: window.google.maps.SymbolPath.CIRCLE,
+                                scale: 7,
+                                fillColor: "#00FF00",
+                                fillOpacity: 1,
+                                strokeWeight: 0
+                            }
+                        });
+                    }
+                }
+            }, [selectedLocation, hasGuessed]);
+
+            const renderGuessButton = () => {
+                if (hasGuessed) {
+                    return (
+                        <div className="space-y-4">
+                            <div className="bg-purple-800 p-4 rounded-lg shadow-lg">
+                                <div className="text-lg mb-2">Actual Year: {currentPhoto.actualYear}</div>
+                                <div className="text-lg mb-2">Your guess: {selectedYear}</div>
+                                <div className="text-lg mb-2">
+                                    Distance: {calculateScores().distance} km away
+                                </div>
+                                <div className="text-lg font-bold">
+                                    Points earned: {calculateScores().totalScore}
+                                </div>
+                            </div>
+                            <button
+                                onClick={nextRound}
+                                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-lg shadow-lg transition-colors"
+                            >
+                                NEXT ROUND
+                            </button>
+                        </div>
+                    );
+                }
+
+                return (
+                    <button
+                        onClick={handleGuess}
+                        disabled={!selectedLocation}
+                        className="w-full bg-gray-500 hover:bg-gray-600 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-bold py-4 rounded-lg shadow-lg transition-colors mb-4"
+                    >
+                        GUESS
+                    </button>
+                );
+            };
+
+            if (isGameOver) {
+                return (
+                    <div className="min-h-screen bg-purple-900 text-white p-6">
+                        <div className="max-w-3xl mx-auto">
+                            <h1 className="text-4xl font-bold text-center mb-8">Game Summary</h1>
+                            <div className="bg-purple-800 p-6 rounded-lg shadow-lg mb-6">
+                                <div className="text-2xl font-bold text-center mb-6">
+                                    Final Score: {score}/500
+                                </div>
+                                <div className="space-y-4">
+                                    {roundScores.map((round, index) => (
+                                        <div key={index} className="bg-purple-700 p-4 rounded-lg">
+                                            <div className="font-bold mb-2">Round {round.round}</div>
+                                            <div>Year Guessed: {round.yearGuess}</div>
+                                            <div>Actual Year: {round.actualYear}</div>
+                                            <div>Distance: {round.distance}km</div>
+                                            <div className="font-bold mt-2">Points: {round.score}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <button
+                                onClick={restartGame}
+                                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-lg shadow-lg transition-colors"
+                            >
+                                PLAY AGAIN
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen bg-purple-900 text-white p-6">
+                    <div className="max-w-3xl mx-auto">
+                        <div className="flex justify-between items-center mb-6">
+                            <div className="text-xl font-bold">Round {currentRound}/5</div>
+                            <div className="text-xl font-bold">Score: {score}/500</div>
+                        </div>
+
+                        <div className="relative mb-6 rounded-lg overflow-hidden shadow-xl">
+                            <img 
+                                src={currentPhoto.imageUrl}
+                                alt={currentPhoto.title}
+                                className="w-full h-72 object-cover"
+                            />
+                        </div>
+
+                        <div className="mb-6">
+                            <div className="text-xl font-bold mb-3">YEAR</div>
+                            <input
+                                type="range"
+                                min="1860"
+                                max="2025"
+                                value={selectedYear}
+                                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                            />
+                            <div className="text-center text-3xl mt-3 font-bold">{selectedYear}</div>
+                        </div>
+
+                        <div className="mb-6 rounded-lg overflow-hidden shadow-xl">
+                            <div id="map" style={mapContainerStyle}></div>
+                        </div>
+
+                        {renderGuessButton()}
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<PhotoGuessGame />, document.getElementById('root'));
+    </script>
+</body>
+</html>
