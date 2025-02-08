@@ -14,6 +14,44 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        const photos = [
+            {
+                imageUrl: "https://i.postimg.cc/gjpJGbYf/temp-Imagec-A2-Rw-F.avif",
+                actualYear: 1967,
+                location: { lat: 37.772277, lng: -122.425897 },
+                title: "San Francisco Scene",
+                description: "Historical photo from San Francisco"
+            },
+            // Add more photos here
+        ];
+
+        const { Fragment } = React;
+
+        const Header = () => (
+            <h1 className="text-5xl font-extrabold text-center text-white p-6">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500">
+                    👑 AshWhen Taken 👑
+                </span>
+            </h1>
+        );
+
+        const ErrorModal = ({ yearDiff, distance, onClose }) => (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-gradient-to-r from-purple-800 to-pink-800 p-8 rounded-xl shadow-2xl max-w-md mx-4 transform animate-bounce">
+                    <h2 className="text-3xl font-bold text-white mb-4 text-center">🤦‍♂️ Oh no!</h2>
+                    <p className="text-xl text-white mb-6 text-center">
+                        You silly goose! You were {Math.abs(yearDiff)} years off and {Math.round(distance)} miles away!
+                    </p>
+                    <button
+                        onClick={onClose}
+                        className="w-full bg-gradient-to-r from-yellow-400 to-pink-500 text-white font-bold py-3 px-6 rounded-lg hover:opacity-90 transition-opacity"
+                    >
+                        I'll Do Better Next Time! 🎯
+                    </button>
+                </div>
+            </div>
+        );
+
         const PhotoGuessGame = () => {
             const [currentRound, setCurrentRound] = React.useState(1);
             const [selectedYear, setSelectedYear] = React.useState(1950);
@@ -22,18 +60,17 @@
             const [hasGuessed, setHasGuessed] = React.useState(false);
             const [isGameOver, setIsGameOver] = React.useState(false);
             const [roundScores, setRoundScores] = React.useState([]);
-            
-            const currentPhoto = {
-                imageUrl: "https://i.postimg.cc/gjpJGbYf/temp-Imagec-A2-Rw-F.avif",
-                actualYear: 1967,
-                location: { lat: 37.772277, lng: -122.425897 },
-                title: "San Francisco Scene",
-                description: "Historical photo from San Francisco"
-            };
+            const [showErrorModal, setShowErrorModal] = React.useState(false);
+            const [currentPhotoIndex, setCurrentPhotoIndex] = React.useState(0);
+            const currentPhoto = photos[currentPhotoIndex];
+
+            // Add ref for the map
+            const mapRef = React.useRef(null);
+            const polylineRef = React.useRef(null);
 
             const mapContainerStyle = {
                 width: '100%',
-                height: '400px',
+                height: '300px',
                 borderRadius: '8px'
             };
 
@@ -43,7 +80,7 @@
             };
 
             const calculateDistance = (lat1, lng1, lat2, lng2) => {
-                const R = 6371;
+                const R = 3959; // Earth's radius in miles (was 6371 km)
                 const dLat = (lat2 - lat1) * Math.PI / 180;
                 const dLng = (lng2 - lng1) * Math.PI / 180;
                 const a = 
@@ -88,9 +125,22 @@
                 }
             };
 
+            // Add confetti effect for correct guesses
+            const triggerConfetti = () => {
+                const colors = ['#FFD700', '#FF69B4', '#00CED1', '#FF6B6B', '#98FB98'];
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: colors
+                });
+            };
+
             const handleGuess = () => {
                 if (!selectedLocation) return;
                 const scores = calculateScores();
+                const yearDiff = Math.abs(selectedYear - currentPhoto.actualYear);
+                
                 setScore(prevScore => Math.round(prevScore + scores.totalScore));
                 setHasGuessed(true);
                 setRoundScores(prev => [...prev, {
@@ -100,6 +150,48 @@
                     distance: scores.distance,
                     score: scores.totalScore
                 }]);
+
+                // Draw arc between guess and actual location
+                if (mapRef.current) {
+                    if (polylineRef.current) {
+                        polylineRef.current.setMap(null);
+                    }
+
+                    // Calculate midpoint with an offset for the curve
+                    const midLat = (selectedLocation.lat + currentPhoto.location.lat) / 2;
+                    const midLng = (selectedLocation.lng + currentPhoto.location.lng) / 2;
+                    const latOffset = (selectedLocation.lat - currentPhoto.location.lat) * 0.2;
+                    const lngOffset = (selectedLocation.lng - currentPhoto.location.lng) * 0.2;
+
+                    // Create curved path with more points for smoother arc
+                    const path = [];
+                    for (let i = 0; i <= 20; i++) {
+                        const t = i / 20;
+                        const lat = (1 - t) * (1 - t) * selectedLocation.lat + 
+                                  2 * (1 - t) * t * (midLat + latOffset) + 
+                                  t * t * currentPhoto.location.lat;
+                        const lng = (1 - t) * (1 - t) * selectedLocation.lng + 
+                                  2 * (1 - t) * t * (midLng + lngOffset) + 
+                                  t * t * currentPhoto.location.lng;
+                        path.push({ lat, lng });
+                    }
+
+                    polylineRef.current = new google.maps.Polyline({
+                        path: path,
+                        geodesic: false,
+                        strokeColor: "#FF0000",
+                        strokeOpacity: 0.8,
+                        strokeWeight: 3,
+                    });
+
+                    polylineRef.current.setMap(mapRef.current);
+                }
+
+                if (scores.totalScore > 60) {
+                    triggerConfetti();
+                } else if (yearDiff > 4 || scores.distance > 100) {
+                    setShowErrorModal(true);
+                }
             };
 
             const nextRound = () => {
@@ -107,9 +199,13 @@
                     setIsGameOver(true);
                 } else {
                     setCurrentRound(prev => prev + 1);
+                    setCurrentPhotoIndex(prev => (prev + 1) % photos.length);
                     setHasGuessed(false);
                     setSelectedYear(1950);
                     setSelectedLocation(null);
+                    if (polylineRef.current) {
+                        polylineRef.current.setMap(null);
+                    }
                 }
             };
 
@@ -140,6 +236,7 @@
                         fullscreenControl: false
                     });
 
+                    mapRef.current = map;
                     map.addListener('click', handleMapClick);
 
                     if (selectedLocation) {
@@ -180,7 +277,7 @@
                                 <div className="text-lg mb-2">Actual Year: {currentPhoto.actualYear}</div>
                                 <div className="text-lg mb-2">Your guess: {selectedYear}</div>
                                 <div className="text-lg mb-2">
-                                    Distance: {calculateScores().distance} km away
+                                    Distance: {calculateScores().distance} miles away
                                 </div>
                                 <div className="text-lg font-bold">
                                     Points earned: {calculateScores().totalScore}
@@ -209,70 +306,93 @@
 
             if (isGameOver) {
                 return (
-                    <div className="min-h-screen bg-purple-900 text-white p-6">
-                        <div className="max-w-3xl mx-auto">
-                            <h1 className="text-4xl font-bold text-center mb-8">Game Summary</h1>
-                            <div className="bg-purple-800 p-6 rounded-lg shadow-lg mb-6">
-                                <div className="text-2xl font-bold text-center mb-6">
-                                    Final Score: {score}/500
+                    <Fragment>
+                        <Header />
+                        <div className="min-h-screen bg-gradient-to-b from-purple-900 via-pink-800 to-purple-900 text-white p-6">
+                            <div className="max-w-3xl mx-auto">
+                                <h1 className="text-6xl font-bold text-center mb-8 animate-bounce">
+                                    🎉 Game Summary 🎉
+                                </h1>
+                                <div className="bg-purple-800/80 backdrop-blur-sm p-8 rounded-2xl shadow-2xl mb-6 border border-purple-500/30">
+                                    <div className="text-3xl font-bold text-center mb-6 animate-pulse">
+                                        Final Score: {score}/500
+                                    </div>
+                                    <div className="space-y-4">
+                                        {roundScores.map((round, index) => (
+                                            <div key={index} 
+                                                 className="bg-gradient-to-r from-purple-700/80 to-pink-700/80 p-6 rounded-xl transform transition-all hover:scale-105">
+                                                <div className="font-bold mb-2">✨ Round {round.round}</div>
+                                                <div>🎯 Year Guessed: {round.yearGuess}</div>
+                                                <div>📅 Actual Year: {round.actualYear}</div>
+                                                <div>🌍 Distance: {round.distance} miles</div>
+                                                <div className="font-bold mt-2">🏆 Points: {round.score}</div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                                <div className="space-y-4">
-                                    {roundScores.map((round, index) => (
-                                        <div key={index} className="bg-purple-700 p-4 rounded-lg">
-                                            <div className="font-bold mb-2">Round {round.round}</div>
-                                            <div>Year Guessed: {round.yearGuess}</div>
-                                            <div>Actual Year: {round.actualYear}</div>
-                                            <div>Distance: {round.distance}km</div>
-                                            <div className="font-bold mt-2">Points: {round.score}</div>
-                                        </div>
-                                    ))}
-                                </div>
+                                <button
+                                    onClick={restartGame}
+                                    className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-6 rounded-xl shadow-2xl transition-all transform hover:scale-105 hover:shadow-purple-500/50"
+                                >
+                                    🎮 PLAY AGAIN 🎮
+                                </button>
                             </div>
-                            <button
-                                onClick={restartGame}
-                                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-lg shadow-lg transition-colors"
-                            >
-                                PLAY AGAIN
-                            </button>
+                            {showErrorModal && (
+                                <ErrorModal
+                                    yearDiff={selectedYear - currentPhoto.actualYear}
+                                    distance={calculateScores().distance}
+                                    onClose={() => setShowErrorModal(false)}
+                                />
+                            )}
                         </div>
-                    </div>
+                    </Fragment>
                 );
             }
 
             return (
-                <div className="min-h-screen bg-purple-900 text-white p-6">
-                    <div className="max-w-3xl mx-auto">
-                        <div className="flex justify-between items-center mb-6">
-                            <div className="text-xl font-bold">Round {currentRound}/5</div>
-                            <div className="text-xl font-bold">Score: {score}/500</div>
-                        </div>
+                <div className="min-h-screen bg-gradient-to-b from-purple-900 via-pink-800 to-purple-900 text-white">
+                    <Header />
+                    <div className="p-4">
+                        <div className="max-w-3xl mx-auto">
+                            <div className="flex justify-between items-center mb-3">
+                                <div className="text-xl font-bold">🎯 {currentRound}/5</div>
+                                <div className="text-xl font-bold">🏆 {score}/500</div>
+                            </div>
 
-                        <div className="relative mb-6 rounded-lg overflow-hidden shadow-xl">
-                            <img 
-                                src={currentPhoto.imageUrl}
-                                alt={currentPhoto.title}
-                                className="w-full h-72 object-cover"
+                            <div className="relative mb-4 rounded-xl overflow-hidden shadow-2xl">
+                                <img 
+                                    src={currentPhoto.imageUrl}
+                                    alt={currentPhoto.title}
+                                    className="w-full h-64 object-cover"
+                                />
+                            </div>
+
+                            <div className="mb-4">
+                                <div className="text-xl font-bold mb-2">📅 Pick the Year!</div>
+                                <input
+                                    type="range"
+                                    min="1860"
+                                    max="2025"
+                                    value={selectedYear}
+                                    onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                                    className="w-full h-2 bg-purple-700 rounded-xl appearance-none cursor-pointer"
+                                />
+                                <div className="text-center text-3xl mt-2 font-bold animate-pulse">{selectedYear}</div>
+                            </div>
+
+                            <div className="mb-4 rounded-xl overflow-hidden shadow-2xl">
+                                <div id="map" style={mapContainerStyle}></div>
+                            </div>
+
+                            {renderGuessButton()}
+                        </div>
+                        {showErrorModal && (
+                            <ErrorModal
+                                yearDiff={selectedYear - currentPhoto.actualYear}
+                                distance={calculateScores().distance}
+                                onClose={() => setShowErrorModal(false)}
                             />
-                        </div>
-
-                        <div className="mb-6">
-                            <div className="text-xl font-bold mb-3">YEAR</div>
-                            <input
-                                type="range"
-                                min="1860"
-                                max="2025"
-                                value={selectedYear}
-                                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                            />
-                            <div className="text-center text-3xl mt-3 font-bold">{selectedYear}</div>
-                        </div>
-
-                        <div className="mb-6 rounded-lg overflow-hidden shadow-xl">
-                            <div id="map" style={mapContainerStyle}></div>
-                        </div>
-
-                        {renderGuessButton()}
+                        )}
                     </div>
                 </div>
             );
@@ -280,5 +400,6 @@
 
         ReactDOM.render(<PhotoGuessGame />, document.getElementById('root'));
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 </body>
 </html>
